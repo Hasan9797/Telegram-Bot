@@ -6,37 +6,46 @@ class TgCommands {
   // 1. sendMessage - oddiy xabar yuborish
   start(msg) {
     const chatId = msg.chat.id;
+
     this.bot.sendMessage(
       chatId,
-      "Assalomu alaykum! Anvar Jiggani botiga xush kelibsiz ))"
+      "Assalomu alaykum! Anvar Jiggani botiga xush kelibsiz ))\nKategoriyalardan birini tanlang: ",
+      {
+        reply_markup: {
+          remove_keyboard: true,
+          inline_keyboard: [
+            [
+              { text: "💫 Uzuk", callback_data: "uzuk" },
+              { text: "⛓ Zirak", callback_data: "zirak" },
+            ],
+            [
+              { text: "💫 Bo'yin Tumor", callback_data: "tumor" },
+              { text: "⛓ Braslit", callback_data: "braslit" },
+            ],
+          ],
+        },
+      }
     );
   }
 
   // 2. sendInlineKeyBoard - inline keyboard bilan xabar yuborish
   sendInlineKeyBoard(msg) {
     const chatId = msg.chat.id;
-    this.bot.sendMessage(chatId, "Kategoriyalardan birini tanlang: ", {
+  }
+
+  // 3. sendPhoto - rasm yuborish
+  sendPhotoWihtInline(chatId, imagePath, product) {
+    this.bot.sendPhoto(chatId, imagePath, {
+      caption: `Mahsulot: ${product.name}`,
       reply_markup: {
-        remove_keyboard: true,
         inline_keyboard: [
           [
-            { text: "💫 Uzuk", callback_data: "uzuk" },
-            { text: "⛓ Zirak", callback_data: "zirak" },
-          ],
-          [
-            { text: "💫 Bo'yin Tumor", callback_data: "tumor" },
-            { text: "⛓ Braslit", callback_data: "braslit" },
+            { text: "Buyurtma berish", callback_data: `order_${product.id}` },
+            { text: "Batafsil", callback_data: `detail_${product.id}` },
           ],
         ],
       },
     });
-  }
-
-  // 3. sendPhoto - rasm yuborish
-  sendPhoto(msg) {
-    const chatId = msg.chat.id;
-    const imagePath = "path/to/your/image.jpg"; // Rasmingizning manzili
-    this.bot.sendPhoto(chatId, imagePath, { caption: "Mana bu rasm!" });
   }
 
   // 4. sendDocument - hujjat yuborish
