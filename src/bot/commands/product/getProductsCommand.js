@@ -17,7 +17,6 @@ class ProductCommands {
     const productsFilter = products.filter(
       (product) => product.category_id === categoryId
     );
-    console.log(productsFilter.length);
 
     if (productsFilter.length <= 0) {
       this.bot.sendMessage(chatId, "Bu kategoriyada mahsulot hozircha yo'q :)");

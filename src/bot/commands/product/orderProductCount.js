@@ -1,8 +1,38 @@
+import { products } from "../../../services/products.js";
 class AddCound {
   constructor(bot) {
     this.bot = bot; // Bot ob'ektini umumiy qilib olamiz
+    this.count = 0;
   }
-  sendProductSelection(chatId, productId, productName) {
+  handle(text) {
+    return (
+      text.includes("product_count_") ||
+      text.includes("p_increase_") ||
+      text.includes("p_decrease_") ||
+      text.includes("p_order_count_")
+    );
+  }
+
+  execute(callback, chatId) {
+    if (callback.data.includes("product_count_")) {
+      this.sendProductSelection(callback, chatId);
+    } else if (
+      callback.data.includes("p_increase_") ||
+      callback.data.includes("p_decrease_") ||
+      callback.data.includes("p_order_count_")
+    ) {
+      this.handleCallbackQuery(callback);
+    }
+  }
+
+  // Mahsulot sonini yangilash
+  sendProductSelection(callback, chatId) {
+    const productId = +callback.data.split("_")[2];
+
+    const productName = products.find(
+      (product) => product.id === productId
+    ).name;
+
     const inlineKeyboard = [
       [
         { text: "➖", callback_data: `p_decrease_${productId}` },
@@ -12,7 +42,7 @@ class AddCound {
       [
         {
           text: "Soxranit v korzinku",
-          callback_data: `p_saveToCart_${productId}`,
+          callback_data: `p_order_count_${productId}`,
         },
       ],
     ];
@@ -40,7 +70,7 @@ class AddCound {
       // Mahsulot sonini kamaytirish (faqat lokal xotirada)
       this.count = Math.max(this.count - 1, 0);
       this.updateProductSelection(chatId, productId, message.message_id);
-    } else if (action === "saveToCart") {
+    } else if (action === "order") {
       // Mahsulotni korzinkaga qo'shish
       const quantity = this.count;
       this.bot.sendMessage(
@@ -63,7 +93,7 @@ class AddCound {
       [
         {
           text: "Soxranit v korzinku",
-          callback_data: `p_saveToCart_${productId}_${this.count}`,
+          callback_data: `p_order_count_${productId}_${this.count}`,
         },
       ],
     ];
