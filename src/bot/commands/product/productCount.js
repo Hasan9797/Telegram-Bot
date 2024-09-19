@@ -8,8 +8,7 @@ class AddCound {
     return (
       text.includes("product_count_") ||
       text.includes("p_increase_") ||
-      text.includes("p_decrease_") ||
-      text.includes("p_order_count_")
+      text.includes("p_decrease_")
     );
   }
 
@@ -18,8 +17,7 @@ class AddCound {
       this.sendProductSelection(callback, chatId);
     } else if (
       callback.data.includes("p_increase_") ||
-      callback.data.includes("p_decrease_") ||
-      callback.data.includes("p_order_count_")
+      callback.data.includes("p_decrease_")
     ) {
       this.handleCallbackQuery(callback);
     }
@@ -27,7 +25,7 @@ class AddCound {
 
   // Mahsulot sonini yangilash
   sendProductSelection(callback, chatId) {
-    const productId = +callback.data.split("_")[2];
+    const productId = parseInt(callback.data.split("_")[2]);
 
     const productName = products.find(
       (product) => product.id === productId
@@ -60,7 +58,7 @@ class AddCound {
     const chatId = message.chat.id;
     const data = callbackQuery.data;
     const action = data.split("_")[1];
-    const productId = data.split("_")[2];
+    const productId = parseInt(data.split("_")[2]);
 
     if (action === "increase") {
       // Mahsulot sonini oshirish (faqat lokal xotirada)
@@ -70,14 +68,6 @@ class AddCound {
       // Mahsulot sonini kamaytirish (faqat lokal xotirada)
       this.count = Math.max(this.count - 1, 0);
       this.updateProductSelection(chatId, productId, message.message_id);
-    } else if (action === "order") {
-      // Mahsulotni korzinkaga qo'shish
-      const quantity = this.count;
-      this.bot.sendMessage(
-        chatId,
-        `${quantity} ta mahsulot korzinkaga qo'shildi.`
-      );
-      // Bu yerda siz serverga yakuniy ma'lumotni yuborishingiz mumkin
     }
   }
 

@@ -6,7 +6,7 @@ class StartCommands {
   }
 
   handle(text) {
-    return text === "/start"; // Bu misol faqat '/start' komandasini tekshiradi
+    return text === "/start" || text === "🏠 Bosh sahifa"; // Bu misol faqat '/start' komandasini tekshiradi
   }
 
   // 1. sendMessage - oddiy xabar yuborish

@@ -1,33 +1,42 @@
-import Tgcommand from "../commands/botcommands.js";
-
-class ProductCommand {
+class AddOrderCommand {
   constructor(bot) {
     this.bot = bot;
   }
 
-  add(chatId, products) {
-    products.forEach((product) => {
-      this.bot.sendPhoto(chatId, product.img, {
-        caption: `Mahsulot: ${product.name}`,
-        remove_keyboard: true,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: "Buyurtma berish",
-                callback_data: `product_${product.id}`,
-              },
-            ],
-          ],
-          resize_keyboard: true,
-        },
-      });
-    });
+  handle(text) {
+    return text.includes("p_order_count_");
   }
 
-  handleCallbackQuery(callbackQuery) {
-    const message = callbackQuery.message;
-    const data = callbackQuery.data;
+  execute(callbackQuery, chatId) {
+    // if (callbackQuery.data.includes("p_order_count_")) {
+    // }
+    this.handleCallbackQuery(callbackQuery.data, chatId);
+    return true;
+  }
+
+  handleCallbackQuery(data, chatId) {
+    const text = data.split("_")[1];
+    const [all, product_id, count] = data.match(/p_order_count_(\d+)_(\d+)/);
+
+    if (text === "order") {
+      const quantity = parseInt(count);
+      const productId = parseInt(product_id);
+
+      this.bot.sendMessage(
+        chatId,
+        `${quantity} ta mahsulot korzinkaga qo'shildi.\nHaridnii davom ettirish uchun, Bosh sahifaga o'ting!`,
+        {
+          reply_markup: {
+            keyboard: [
+              ["🛒 Karzinka"],
+              [" 🏠 Bosh sahifa "], // Birinchi qator
+            ],
+            resize_keyboard: true, // Kichikroq klaviatura yaratish uchun
+            one_time_keyboard: true, // Klaviaturani faqat bir marta ko'rsatish
+          },
+        }
+      );
+    }
   }
 }
-export default ProductCommand;
+export default AddOrderCommand;

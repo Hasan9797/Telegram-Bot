@@ -1,12 +1,17 @@
 import ProductCommand from "./product/getProductsCommand.js";
 import StartCommand from "./start/start.js";
-import AddCoundCommand from "./product/orderProductCount.js";
+import ProductCoundCommand from "./product/productCount.js";
+import OrderCommand from "./order/addOrder.js";
 
 class Fabric {
   constructor(bot) {
     this.bot = bot;
     this.messageCommands = [new StartCommand(bot)];
-    this.callbackCommands = [new ProductCommand(bot), new AddCoundCommand(bot)];
+    this.callbackCommands = [
+      new ProductCommand(bot),
+      new ProductCoundCommand(bot),
+      new OrderCommand(bot),
+    ];
   }
 
   processUpdateMessage(message) {
@@ -28,7 +33,7 @@ class Fabric {
   processUpdateCallback(callbackQuery) {
     const chatId = callbackQuery.message.chat.id;
     const text = callbackQuery.data;
-    // console.log("Received callbackQuery:", callbackQuery);
+    console.log("Received callbackQuery:", callbackQuery);
 
     for (const command of this.callbackCommands) {
       console.log("Checking callback command:", command.constructor.name);
