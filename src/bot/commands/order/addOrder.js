@@ -7,20 +7,21 @@ class AddOrderCommand {
     return text.includes("p_order_count_");
   }
 
-  execute(callbackQuery, chatId) {
-    // if (callbackQuery.data.includes("p_order_count_")) {
-    // }
+  async execute(callbackQuery, chatId) {
+    const messageId = callbackQuery.message.message_id;
+    this.sendDeleteMessage(chatId, messageId);
     this.handleCallbackQuery(callbackQuery.data, chatId);
     return true;
   }
 
   handleCallbackQuery(data, chatId) {
-    const text = data.split("_")[1];
-    const [all, product_id, count] = data.match(/p_order_count_(\d+)_(\d+)/);
+    const array = data.split("_");
+    const text = array[1];
+    const productId = array[3];
+    const count = array[4];
 
     if (text === "order") {
       const quantity = parseInt(count);
-      const productId = parseInt(product_id);
 
       this.bot.sendMessage(
         chatId,
@@ -37,6 +38,17 @@ class AddOrderCommand {
         }
       );
     }
+  }
+
+  sendDeleteMessage(chatId, messageId) {
+    this.bot
+      .deleteMessage(chatId, messageId)
+      .then(() => {
+        console.log("Xabar o'chirildi");
+      })
+      .catch((err) => {
+        console.error("Xabarni o'chirishda xatolik:", err);
+      });
   }
 }
 export default AddOrderCommand;

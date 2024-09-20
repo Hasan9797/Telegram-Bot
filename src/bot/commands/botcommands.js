@@ -29,8 +29,15 @@ class TgCommands {
   }
 
   // 2. sendInlineKeyBoard - inline keyboard bilan xabar yuborish
-  sendInlineKeyBoard(msg) {
-    const chatId = msg.chat.id;
+  sendDeleteMessage(chatId, messageId) {
+    this.bot
+      .deleteMessage(chatId, messageId)
+      .then(() => {
+        console.log("Xabar o'chirildi");
+      })
+      .catch((err) => {
+        console.error("Xabarni o'chirishda xatolik:", err);
+      });
   }
 
   // 3. sendPhoto - rasm yuborish

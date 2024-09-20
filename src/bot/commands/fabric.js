@@ -18,7 +18,7 @@ class Fabric {
     const chatId = message.chat.id;
     const text = message.text;
     console.log(message);
-
+    
     for (const command of this.messageCommands) {
       if (command.handle(text)) {
         command.execute(chatId);
@@ -30,14 +30,15 @@ class Fabric {
   }
 
   // Agar callback qo'llash kerak bo'lsa
-  processUpdateCallback(callbackQuery) {
+  async processUpdateCallback(callbackQuery) {
     const chatId = callbackQuery.message.chat.id;
     const text = callbackQuery.data;
+
     console.log("Received callbackQuery:", callbackQuery);
 
     for (const command of this.callbackCommands) {
       console.log("Checking callback command:", command.constructor.name);
-      if (command.handle(text)) {
+      if (await command.handle(text)) {
         console.log("Callback Command matched:", command.constructor.name);
         command.execute(callbackQuery, chatId);
         return; // Komanda bajarilgandan keyin sikldan chiqish
@@ -46,12 +47,30 @@ class Fabric {
 
     this.bot.sendMessage(chatId, "Bunday komanda mavjud emas.");
   }
+
+  saveMessage(chatId, messageId) {
+    const key = `chat:${chatId}`;
+    client.rpush(key, messageId);
+  }
+
+  async deleteAllMessages(chatId) {
+    const key = `chat:${chatId}`;
+
+    // Redisdan barcha message_id larni olish
+    client.lrange(key, 0, -1, (err, messageIds) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      messageIds.forEach((messageId) => {
+        bot.deleteMessage(chatId, messageId);
+      });
+
+      // O'chirilgandan so'ng, Redisdan ham xabarlarni o'chirish
+      client.del(key);
+    });
+  }
 }
 
 export default Fabric;
-
-// export const processCategory = (query, bot) => {
-//   const chatId = query.message.chat.id;
-//   const command = new ProductCommand(bot);
-//   command.execute(query, chatId);
-// };

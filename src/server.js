@@ -9,8 +9,9 @@ import { connectDB } from "./config/database.js";
 
 import "./bot/bot.js";
 
-// import commintRouter from './routes/commint.js';
-// import authRouter from './routes/auth.js';
+import categoryRouter from "./routes/category.js";
+import productRouter from "./routes/product.js";
+import authRouter from "./routes/auth.js";
 
 const app = express();
 
@@ -27,9 +28,9 @@ app.set("views", "./views");
 // Routers
 // app.use('/', homeRouter);
 // app.use('/profile', userRouter);
-// app.use('/diary', diaryRouter);
-// app.use('/commint', commintRouter);
-// app.use('/auth', authRouter);
+app.use("/api/product", productRouter);
+app.use("/api/category", categoryRouter);
+app.use("/api/auth", authRouter);
 
 connectDB();
 
