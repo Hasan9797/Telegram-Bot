@@ -8,8 +8,9 @@ const orderSchema = new Schema(
         count: { type: Number, default: 1 },
       },
     ],
-    userId: { type: Schema.Types.ObjectId, ref: "Users" },
-
+    user_name: { type: String, required: true },
+    first_name: { type: String, required: true },
+    chat_id: { type: Number, required: true },
     active: { type: Boolean, default: false },
   },
   { timestamps: true }

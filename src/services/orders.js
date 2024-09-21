@@ -24,15 +24,31 @@ export const getOrders = async (page, limit) => {
   }
 };
 
+export const getOrderByChatId = async (chatId) => {
+  try {
+    return await Order.findOne({ chat_id: chatId });
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const addOrder = async (body) => {
   try {
-    const newOrder = new Order({
-      body,
-    });
+    const newOrder = new Order(body);
     await newOrder.save();
     return newOrder;
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ message: error.message });
+    throw error.message;
+  }
+};
+
+export const updateOrder = async (id, body) => {
+  try {
+    await Order.findByIdAndUpdate(id, body, { new: true });
+    return true;
+  } catch (error) {
+    console.log(error.message);
+    throw error;
   }
 };

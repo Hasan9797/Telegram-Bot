@@ -6,6 +6,7 @@ import { config } from "dotenv";
 config();
 
 import { connectDB } from "./config/database.js";
+import redisClient from "./config/redis.js";
 
 import "./bot/bot.js";
 
@@ -32,7 +33,12 @@ app.use("/api/product", productRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/auth", authRouter);
 
-connectDB();
+const start = async () => {
+  connectDB();
+  await redisClient.connect();
+  redisClient.on("error", (err) => console.log("Redis Client Error", err));
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Server running on PORT: ${PORT}`));
+};
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on PORT: ${PORT}`));
+start();

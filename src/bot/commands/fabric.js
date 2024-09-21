@@ -1,7 +1,7 @@
 import ProductCommand from "./product/getProductsCommand.js";
 import StartCommand from "./start/start.js";
 import ProductCoundCommand from "./product/productCount.js";
-import OrderCommand from "./order/addOrder.js";
+import OrderCommand from "./order/orderCallback.js";
 
 class Fabric {
   constructor(bot) {
@@ -17,8 +17,9 @@ class Fabric {
   processUpdateMessage(message) {
     const chatId = message.chat.id;
     const text = message.text;
+
     console.log(message);
-    
+
     for (const command of this.messageCommands) {
       if (command.handle(text)) {
         command.execute(chatId);
@@ -46,30 +47,6 @@ class Fabric {
     }
 
     this.bot.sendMessage(chatId, "Bunday komanda mavjud emas.");
-  }
-
-  saveMessage(chatId, messageId) {
-    const key = `chat:${chatId}`;
-    client.rpush(key, messageId);
-  }
-
-  async deleteAllMessages(chatId) {
-    const key = `chat:${chatId}`;
-
-    // Redisdan barcha message_id larni olish
-    client.lrange(key, 0, -1, (err, messageIds) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-
-      messageIds.forEach((messageId) => {
-        bot.deleteMessage(chatId, messageId);
-      });
-
-      // O'chirilgandan so'ng, Redisdan ham xabarlarni o'chirish
-      client.del(key);
-    });
   }
 }
 

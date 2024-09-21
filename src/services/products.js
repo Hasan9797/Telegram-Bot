@@ -59,7 +59,7 @@ const getAllProductsByCategoryId = async (page, limit, categoryId) => {
       .skip(Number(skip));
 
     const total = await Product.countDocuments({ category_id: categoryId });
-    
+
     if (products.length === 0) {
       return { message: "product not found", data: false };
     }

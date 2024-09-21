@@ -1,4 +1,6 @@
 import productService from "../../../services/products.js";
+import { deleteAllMessages, saveMessage } from "../helpers/cachingHelper.js";
+import { sendDeleteMessage } from "../helpers/tgBotHelper.js";
 class ProductCommands {
   constructor(bot) {
     this.bot = bot;
@@ -19,11 +21,14 @@ class ProductCommands {
   }
 
   async execute(query, chatId) {
+    const messageId = query.message.message_id;
+
     if (query.data.startsWith("cate_")) {
+      this.page = 1;
       const categoryId = query.data.split("_")[1];
+      sendDeleteMessage(chatId, messageId, this.bot);
       await this.showProducts(chatId, categoryId);
-    }
-    if (
+    } else if (
       query.data.startsWith("back_page_") ||
       query.data.startsWith("next_page_")
     ) {
@@ -47,7 +52,7 @@ class ProductCommands {
       return true;
     }
 
-    products.forEach((product, index) => {
+    for (const [index, product] of products.entries()) {
       let inlineKeyboard = [
         [
           {
@@ -76,7 +81,7 @@ class ProductCommands {
       }
 
       // Mahsulot suratini jo'natamiz
-      this.bot.sendPhoto(chatId, product.img, {
+      const sentMessage = await this.bot.sendPhoto(chatId, product.img, {
         caption: `Nomi: ${product.title}\nNarxi: ${product.price}\nMa'lumot: ${product.description}`,
         remove_keyboard: true,
         reply_markup: {
@@ -84,7 +89,11 @@ class ProductCommands {
           resize_keyboard: true,
         },
       });
-    });
+
+      // Xabarni Redisga saqlash
+      const messageId = sentMessage.message_id;
+      await saveMessage(chatId, messageId);
+    }
   }
 
   // Sahifa tugmalarini qo'shish
@@ -108,6 +117,7 @@ class ProductCommands {
         return this.bot.sendMessage(chatId, "Siz oxirgi sahifadasiz!");
       }
     }
+    await deleteAllMessages(chatId, this.bot);
     await this.showProducts(chatId, categoryId);
   }
 }
