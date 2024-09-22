@@ -39,7 +39,7 @@ const getProductById = async (id) => {
 
     if (product) {
       await redisClient.set(`product:${id}`, JSON.stringify(product), {
-        EX: 8400, // Cache muddati (1 soat)
+        EX: 84600,
       });
     }
 
@@ -76,6 +76,11 @@ const getAllProductsByCategoryId = async (page, limit, categoryId) => {
   }
 };
 
+const getProductCountByCategoryId = async (categoryId, limit) => {
+  const total = await Product.countDocuments({ category_id: categoryId });
+  return Math.ceil(total / limit);
+};
+
 const addProduct = async (body) => {
   try {
     const newProduct = new Product(body);
@@ -92,4 +97,5 @@ export default {
   getAllProductsByCategoryId,
   addProduct,
   getProductById,
+  getProductCountByCategoryId,
 };

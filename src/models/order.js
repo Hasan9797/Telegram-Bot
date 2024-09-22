@@ -11,6 +11,7 @@ const orderSchema = new Schema(
     user_name: { type: String, required: true },
     first_name: { type: String, required: true },
     chat_id: { type: Number, required: true },
+    phone: { type: String, required: false },
     active: { type: Boolean, default: false },
   },
   { timestamps: true }

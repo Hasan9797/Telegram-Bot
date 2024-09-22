@@ -9,7 +9,7 @@ class StartCommands {
     return text === "/start" || text === "🏠 Bosh sahifa";
   }
 
-  async execute(chatId) {
+  async execute(message, chatId) {
     try {
       const categories = await categoryService.getCategory(); // Kategoriyalarni olish
       const inlineKeyboard = [];

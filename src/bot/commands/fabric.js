@@ -1,15 +1,16 @@
 import ProductCommand from "./product/getProductsCommand.js";
 import StartCommand from "./start/start.js";
-import ProductCoundCommand from "./product/productCount.js";
-import OrderCommand from "./order/orderCallback.js";
+import ProductCountCommand from "./product/productCount.js";
+import OrderCommand from "./order/addOrder.js";
+import GetOrderCommand from "./order/getOrder.js";
 
 class Fabric {
   constructor(bot) {
     this.bot = bot;
-    this.messageCommands = [new StartCommand(bot)];
+    this.messageCommands = [new StartCommand(bot), new GetOrderCommand(bot)];
     this.callbackCommands = [
       new ProductCommand(bot),
-      new ProductCoundCommand(bot),
+      new ProductCountCommand(bot),
       new OrderCommand(bot),
     ];
   }
@@ -22,15 +23,14 @@ class Fabric {
 
     for (const command of this.messageCommands) {
       if (command.handle(text)) {
-        command.execute(chatId);
-        return; // Komanda bajarilgandan keyin sikldan chiqish
+        command.execute(message, chatId);
+        return;
       }
     }
 
     this.bot.sendMessage(chatId, "Bunday komanda mavjud emas.");
   }
 
-  // Agar callback qo'llash kerak bo'lsa
   async processUpdateCallback(callbackQuery) {
     const chatId = callbackQuery.message.chat.id;
     const text = callbackQuery.data;
@@ -42,7 +42,7 @@ class Fabric {
       if (await command.handle(text)) {
         console.log("Callback Command matched:", command.constructor.name);
         command.execute(callbackQuery, chatId);
-        return; // Komanda bajarilgandan keyin sikldan chiqish
+        return;
       }
     }
 

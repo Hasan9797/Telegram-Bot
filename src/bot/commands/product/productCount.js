@@ -1,7 +1,7 @@
 import productService from "../../../services/products.js";
 import { deleteAllMessages } from "../helpers/cachingHelper.js";
 
-class AddCound {
+class ProductCountCommand {
   constructor(bot) {
     this.bot = bot; // Bot ob'ektini umumiy qilib olamiz
     this.count = 0;
@@ -38,7 +38,7 @@ class AddCound {
     const chatId = message.chat.id;
     const data = callback.data;
 
-    const productId = data.split("_")[2];
+    const productId = data.split("_")[2].toString();
     const product = await productService.getProductById(productId);
 
     const inlineKeyboard = [
@@ -49,14 +49,12 @@ class AddCound {
       ],
       [
         {
-          text: "🛒 karzinkaga qo'shish",
-          callback_data: `p_order_count_${product._id}_${this.count}`,
-        },
-      ],
-      [
-        {
           text: "⬅️ Ortga qaytish",
           callback_data: `cate_${product.category_id}`,
+        },
+        {
+          text: "🛒 Savatga",
+          callback_data: `p_order_count_${product._id}_${this.count}`,
         },
       ],
     ];
@@ -98,4 +96,4 @@ class AddCound {
   }
 }
 
-export default AddCound;
+export default ProductCountCommand;

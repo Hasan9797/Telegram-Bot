@@ -6,7 +6,7 @@ class ProductCommands {
     this.bot = bot;
     this.page = 1;
     this.limit = 2;
-    this.productCount = 0;
+    this.totalPage = 0;
   }
 
   handle(text) {
@@ -25,7 +25,7 @@ class ProductCommands {
 
     if (query.data.startsWith("cate_")) {
       this.page = 1;
-      const categoryId = query.data.split("_")[1];
+      const categoryId = query.data.split("_")[1].toString();
       sendDeleteMessage(chatId, messageId, this.bot);
       await this.showProducts(chatId, categoryId);
     } else if (
@@ -44,8 +44,9 @@ class ProductCommands {
       categoryId
     );
 
-    const products = productsFilter.data ?? [];
-    this.productCount = productsFilter.totalPages ?? 0;
+    const products = productsFilter.data ? productsFilter.data : [];
+
+    this.totalPage = productsFilter.totalPages ?? 0;
 
     if (products.length <= 0) {
       this.bot.sendMessage(chatId, "Bu kategoriyada mahsulot hozircha yo'q :)");
@@ -56,8 +57,8 @@ class ProductCommands {
       let inlineKeyboard = [
         [
           {
-            text: "Buyurtma berish",
-            callback_data: `product_count_${product.id}`,
+            text: "Harid qilish uchun 🛒",
+            callback_data: `product_count_${product.id}_${this.page}`,
           },
         ],
       ];
@@ -111,7 +112,12 @@ class ProductCommands {
         return this.bot.sendMessage(chatId, "Siz birinchi sahifadasiz!");
       }
     } else if (action.startsWith("next_page_")) {
-      if (page <= this.productCount) {
+      this.totalPage = await productService.getProductCountByCategoryId(
+        categoryId,
+        this.limit
+      );
+
+      if (page <= this.totalPage) {
         this.page = page;
       } else {
         return this.bot.sendMessage(chatId, "Siz oxirgi sahifadasiz!");
